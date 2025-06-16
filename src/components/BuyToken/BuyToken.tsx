@@ -28,9 +28,13 @@ const BuyToken: React.FC = () => {
       return;
     }
     const program = getMintProgram(connection, window.solana);
-    mintTokens(program, publicKey, amount);
+    try {
+      await mintTokens(program, publicKey, amount);
+      toast.success("Token Minting initiated!");
+    } catch (error: any) {
+      toast.warning(error?.message || "An error occurred during minting");
+    }
     // TODO: Implement token Buying logic here
-    toast.success("Token Staking initiated!");
   };
 
   return (
