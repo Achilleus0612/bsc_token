@@ -1,13 +1,25 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { Connection, PublicKey } from "@solana/web3.js";
+import { mintTokens, getMintProgram } from "../../lib/mint";
+
+declare global {
+  interface Window {
+    solana: any;
+  }
+}
+
+const TOKEN_MINT = new PublicKey("Grg2fAdyyn5svZyJdGBTeXDeddYMGwHYMzcVTYtkyNsH"); // Replace with your token mint address
+const VAULT_TOKEN_ACCOUNT = new PublicKey("B848Q6vgD7poDSsbj7VcEvQPiuWRccuAhwcEKctNfdtw"); // Replace with your vault token account
 
 const BuyToken: React.FC = () => {
   const [amount, setAmount] = useState(0);
   const { publicKey, connected } = useWallet();
+  const connection = new Connection("https://api.devnet.solana.com", "confirmed");
 
   const handleBuyToken = async () => {
-    if (!connected) {
+    if (!connected || !publicKey) {
       toast.error("Please connect your wallet first!");
       return;
     }
@@ -15,6 +27,8 @@ const BuyToken: React.FC = () => {
       toast.error("Please enter a valid amount!");
       return;
     }
+    const program = getMintProgram(connection, window.solana);
+    mintTokens(program, publicKey, amount);
     // TODO: Implement token Buying logic here
     toast.success("Token Staking initiated!");
   };
