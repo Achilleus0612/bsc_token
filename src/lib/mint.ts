@@ -46,13 +46,11 @@ export const mintTokens = async (
     const [tokenStatePDA] = getTokenStatePDA();
     const userTokenAccount = await getUserTokenAccount(wallet);
 
-    console.log(userAccountPDA.toBase58(), tokenStatePDA.toBase58(), userTokenAccount.toBase58());
-
     try {
         const tx = await program.methods
             .mint(new BN(amount * 10 ** 6))
             .accounts({
-                mint: MINT_PROGRAM_ID,
+                mint: MINT_TOKEN,
                 userTokenAccount: userTokenAccount,
                 userAccount: userAccountPDA,
                 tokenState: tokenStatePDA,
