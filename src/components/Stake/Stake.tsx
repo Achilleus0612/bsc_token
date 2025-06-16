@@ -1,14 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { Connection, PublicKey } from "@solana/web3.js";
+import { getStakingProgram, stakeTokens, unstakeTokens, claimRewards, getPendingRewards } from "../../lib/staking";
+
+declare global {
+  interface Window {
+    solana: any;
+  }
+}
+
+const TOKEN_MINT = new PublicKey("Grg2fAdyyn5svZyJdGBTeXDeddYMGwHYMzcVTYtkyNsH"); // Replace with your token mint address
+const VAULT_TOKEN_ACCOUNT = new PublicKey("B848Q6vgD7poDSsbj7VcEvQPiuWRccuAhwcEKctNfdtw"); // Replace with your vault token account
 
 const Stake: React.FC = () => {
   const [stakeAmount, setStakeAmount] = useState(0);
   const [stakeDuration, setStakeDuration] = useState(30); // days
-  const { connected } = useWallet();
+  const [pendingRewards, setPendingRewards] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const { publicKey, connected } = useWallet();
+
+  const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+
+  useEffect(() => {
+    if (connected && publicKey) {
+      fetchPendingRewards();
+    }
+  }, [connected, publicKey]);
+
+  const fetchPendingRewards = async () => {
+    if (!publicKey) return;
+    
+    try {
+      const program = getStakingProgram(connection, window.solana);
+      const rewards = await getPendingRewards(program, publicKey);
+      setPendingRewards(rewards);
+    } catch (error) {
+      console.error("Error fetching rewards:", error);
+    }
+  };
 
   const handleStake = async () => {
-    if (!connected) {
+    if (!connected || !publicKey) {
       toast.error("Please connect your wallet first!");
       return;
     }
@@ -16,17 +50,109 @@ const Stake: React.FC = () => {
       toast.error("Please enter a valid amount!");
       return;
     }
-    // TODO: Implement staking logic here
-    toast.success("Staking initiated!");
+
+    setIsLoading(true);
+    try {
+      const program = getStakingProgram(connection, window.solana);
+      const userTokenAccount = await connection.getTokenAccountsByOwner(publicKey, {
+        mint: TOKEN_MINT,
+      });
+
+      if (userTokenAccount.value.length === 0) {
+        toast.error("No token account found!");
+        return;
+      }
+
+      const tx = await stakeTokens(
+        program,
+        publicKey,
+        stakeAmount,
+        TOKEN_MINT,
+        userTokenAccount.value[0].pubkey,
+        VAULT_TOKEN_ACCOUNT
+      );
+
+      toast.success("Staking successful!");
+      await fetchPendingRewards();
+    } catch (error) {
+      console.error("Error staking:", error);
+      toast.error("Failed to stake tokens");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleUnstake = async () => {
-    if (!connected) {
+    if (!connected || !publicKey) {
       toast.error("Please connect your wallet first!");
       return;
     }
-    // TODO: Implement unstaking logic here
-    toast.success("Unstaking initiated!");
+
+    setIsLoading(true);
+    try {
+      const program = getStakingProgram(connection, window.solana);
+      const userTokenAccount = await connection.getTokenAccountsByOwner(publicKey, {
+        mint: TOKEN_MINT,
+      });
+
+      if (userTokenAccount.value.length === 0) {
+        toast.error("No token account found!");
+        return;
+      }
+
+      const tx = await unstakeTokens(
+        program,
+        publicKey,
+        stakeAmount,
+        TOKEN_MINT,
+        userTokenAccount.value[0].pubkey,
+        VAULT_TOKEN_ACCOUNT
+      );
+
+      toast.success("Unstaking successful!");
+      await fetchPendingRewards();
+    } catch (error) {
+      console.error("Error unstaking:", error);
+      toast.error("Failed to unstake tokens");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleClaimRewards = async () => {
+    if (!connected || !publicKey) {
+      toast.error("Please connect your wallet first!");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const program = getStakingProgram(connection, window.solana);
+      const userTokenAccount = await connection.getTokenAccountsByOwner(publicKey, {
+        mint: TOKEN_MINT,
+      });
+
+      if (userTokenAccount.value.length === 0) {
+        toast.error("No token account found!");
+        return;
+      }
+
+      const tx = await claimRewards(
+        program,
+        publicKey,
+        TOKEN_MINT,
+        userTokenAccount.value[0].pubkey,
+        VAULT_TOKEN_ACCOUNT
+      );
+
+      toast.success("Rewards claimed successfully!");
+      await fetchPendingRewards();
+    } catch (error) {
+      console.error("Error claiming rewards:", error);
+      toast.error("Failed to claim rewards");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -43,7 +169,7 @@ const Stake: React.FC = () => {
             <div className="banner-countdown-wrap text-center">
               <div className="stake-container">
                 <div className="stake-input-group">
-                 <span style={{marginTop: "12px"}}>Stake Amount</span>
+                <span style={{marginTop: "12px"}}>Stake Amount</span>
 
                   <input
                     className="Buy-token-input"
@@ -64,39 +190,36 @@ const Stake: React.FC = () => {
                   </div>
                   <div className="info-item">
                     <span>Rewards:</span>
-                    <span className="value">0 BSC</span>
+                    <span className="value">{pendingRewards} UNT</span>
                   </div>
                   <div className="info-item">
                     <span>Staked Amount</span>
-                    <span className="value">{stakeDuration}BSC</span>
+                    <span className="value">{stakeDuration} days</span>
                   </div>
                 </div>
 
                 <div className="stake-actions">
-                <button
-                    className="btn unstake-btn"
-                    onClick={handleUnstake}
-                    disabled={!connected}
-                  >
-                    Claim Rewards
-                  </button>
                   <button
                     className="btn stake-btn"
                     onClick={handleStake}
-                    disabled={!connected}
+                    disabled={!connected || isLoading}
                   >
-                    Stake Tokens
+                    {isLoading ? "Processing..." : "Stake Tokens"}
                   </button>
-                 
                   <button
                     className="btn unstake-btn"
                     onClick={handleUnstake}
-                    disabled={!connected}
-                    style={{backgroundColor: "#000", color: "#fff"}}
+                    disabled={!connected || isLoading}
                   >
-                    Unstake Tokens
+                    {isLoading ? "Processing..." : "Unstake Tokens"}
                   </button>
-                 
+                  <button
+                    className="btn claim-btn"
+                    onClick={handleClaimRewards}
+                    disabled={!connected || isLoading || pendingRewards <= 0}
+                  >
+                    {isLoading ? "Processing..." : "Claim Rewards"}
+                  </button>
                 </div>
               </div>
             </div>
