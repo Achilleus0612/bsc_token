@@ -190,31 +190,31 @@ const Stake: React.FC = () => {
                   </div>
                   <div className="info-item">
                     <span>Rewards:</span>
-                    <span className="value">{pendingRewards} UNT</span>
+                    <span className="value">{pendingRewards} BSC</span>
                   </div>
                   <div className="info-item">
                     <span>Staked Amount</span>
-                    <span className="value">{stakeDuration} days</span>
+                    <span className="value">{stakeDuration}</span>
                   </div>
                 </div>
 
                 <div className="stake-actions">
                   <button
-                    className="btn stake-btn"
+                    className="btn"
                     onClick={handleStake}
                     disabled={!connected || isLoading}
                   >
                     {isLoading ? "Processing..." : "Stake Tokens"}
                   </button>
                   <button
-                    className="btn unstake-btn"
+                    className="btn"
                     onClick={handleUnstake}
                     disabled={!connected || isLoading}
                   >
                     {isLoading ? "Processing..." : "Unstake Tokens"}
                   </button>
                   <button
-                    className="btn claim-btn"
+                    className="btn"
                     onClick={handleClaimRewards}
                     disabled={!connected || isLoading || pendingRewards <= 0}
                   >
