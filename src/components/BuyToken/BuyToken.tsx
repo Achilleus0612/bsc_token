@@ -16,7 +16,7 @@ const BuyToken: React.FC = () => {
       return;
     }
     // TODO: Implement token Buying logic here
-    toast.success("Token Buying initiated!");
+    toast.success("Token Staking initiated!");
   };
 
   return (
