@@ -28,6 +28,13 @@ export const getUserAccount = (wallet: PublicKey) => {
     );
 };
 
+export const getLockRecordPDA = (wallet: PublicKey) => {
+    return PublicKey.findProgramAddressSync(
+        [Buffer.from("lock_record"), wallet.toBuffer()],
+        MINT_PROGRAM_ID
+    );
+};
+
 export const getUserTokenAccount = async (wallet: PublicKey) => {
     const userTokenAccount = await getAssociatedTokenAddress(
         MINT_TOKEN,
@@ -35,6 +42,45 @@ export const getUserTokenAccount = async (wallet: PublicKey) => {
         false // allowOwnerOffCurve = false unless you're using a PDA wallet
     );
     return userTokenAccount;
+};
+
+export const initializeUser = async (
+    program: Program,
+    wallet: PublicKey
+) => {
+    const [userAccountPDA] = getUserAccount(wallet);
+    const [lockRecordPDA] = getLockRecordPDA(wallet);
+    
+    try {
+        const tx = await program.methods
+            .initializeUser()
+            .accounts({
+                userAccount: userAccountPDA,
+                lockRecord: lockRecordPDA,
+                owner: wallet,
+                systemProgram: SystemProgram.programId,
+            })
+            .rpc();
+        
+        return tx;
+    } catch (error) {
+        console.error("Error initializing user:", error);
+        throw error;
+    }
+};
+
+export const checkIfUserInitialized = async (
+    program: Program,
+    wallet: PublicKey
+) => {
+    const [userAccountPDA] = getUserAccount(wallet);
+    
+    try {
+        await program.account.userAccount.fetch(userAccountPDA);
+        return true;
+    } catch (error) {
+        return false;
+    }
 };
 
 export const mintTokens = async (
@@ -47,6 +93,13 @@ export const mintTokens = async (
     const userTokenAccount = await getUserTokenAccount(wallet);
 
     try {
+        // Check if user is initialized, if not, initialize them first
+        const isInitialized = await checkIfUserInitialized(program, wallet);
+        if (!isInitialized) {
+            console.log("User not initialized, initializing first...");
+            await initializeUser(program, wallet);
+        }
+        
         const tx = await program.methods
             .mint(new BN(amount * 10 ** 6))
             .accounts({
@@ -55,13 +108,13 @@ export const mintTokens = async (
                 userAccount: userAccountPDA,
                 tokenState: tokenStatePDA,
                 owner: wallet,
-                systemProgram: SystemProgram.programId,
+                tokenProgram: new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
             })
             .rpc();
 
         return tx;
     } catch (error) {
-        console.error("Error staking tokens:", error);
+        console.error("Error minting tokens:", error);
         throw error;
     }
 };
