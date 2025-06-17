@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { getStakingProgram, stakeTokens, unstakeTokens, claimRewards, getPendingRewards } from "../../lib/staking";
+import { getStakingProgram, stakeTokens, unstakeTokens, claimRewards, getPendingRewards, getStakedAmount } from "../../lib/staking";
 
 declare global {
   interface Window {
@@ -11,12 +10,11 @@ declare global {
   }
 }
 
-const TOKEN_MINT = new PublicKey("Grg2fAdyyn5svZyJdGBTeXDeddYMGwHYMzcVTYtkyNsH"); // Replace with your token mint address
-const VAULT_TOKEN_ACCOUNT = new PublicKey("B848Q6vgD7poDSsbj7VcEvQPiuWRccuAhwcEKctNfdtw"); // Replace with your vault token account
+const TOKEN_MINT = new PublicKey("Be4J9xewbY1rRfxipv5rNuNEsFNRQ3PfrLcqSZVkVU3f"); // Replace with your token mint address
 
 const Stake: React.FC = () => {
   const [stakeAmount, setStakeAmount] = useState(0);
-  const [stakeDuration, setStakeDuration] = useState(30); // days
+  const [stakedAmount, setStakedAmount] = useState(0);
   const [pendingRewards, setPendingRewards] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const { publicKey, connected } = useWallet();
@@ -25,19 +23,24 @@ const Stake: React.FC = () => {
 
   useEffect(() => {
     if (connected && publicKey) {
-      fetchPendingRewards();
+      fetchStakingData();
     }
   }, [connected, publicKey]);
 
-  const fetchPendingRewards = async () => {
+  const fetchStakingData = async () => {
     if (!publicKey) return;
     
     try {
       const program = getStakingProgram(connection, window.solana);
-      const rewards = await getPendingRewards(program, publicKey);
+      const [rewards, staked] = await Promise.all([
+        getPendingRewards(program, publicKey),
+        getStakedAmount(program, publicKey)
+      ]);
+      console.log(rewards,staked,'asdfasdfsdfsdfasdfasdf')
       setPendingRewards(rewards);
+      setStakedAmount(staked);
     } catch (error) {
-      console.error("Error fetching rewards:", error);
+      console.error("Error fetching staking data:", error);
     }
   };
 
@@ -69,11 +72,12 @@ const Stake: React.FC = () => {
         stakeAmount,
         TOKEN_MINT,
         userTokenAccount.value[0].pubkey,
-        VAULT_TOKEN_ACCOUNT
+        connection,
+        window.solana
       );
 
       toast.success("Staking successful!");
-      await fetchPendingRewards();
+      await fetchStakingData();
     } catch (error) {
       console.error("Error staking:", error);
       toast.error("Failed to stake tokens");
@@ -106,11 +110,11 @@ const Stake: React.FC = () => {
         stakeAmount,
         TOKEN_MINT,
         userTokenAccount.value[0].pubkey,
-        VAULT_TOKEN_ACCOUNT
+        connection
       );
 
       toast.success("Unstaking successful!");
-      await fetchPendingRewards();
+      await fetchStakingData();
     } catch (error) {
       console.error("Error unstaking:", error);
       toast.error("Failed to unstake tokens");
@@ -142,11 +146,11 @@ const Stake: React.FC = () => {
         publicKey,
         TOKEN_MINT,
         userTokenAccount.value[0].pubkey,
-        VAULT_TOKEN_ACCOUNT
+        connection
       );
 
       toast.success("Rewards claimed successfully!");
-      await fetchPendingRewards();
+      await fetchStakingData();
     } catch (error) {
       console.error("Error claiming rewards:", error);
       toast.error("Failed to claim rewards");
@@ -194,7 +198,7 @@ const Stake: React.FC = () => {
                   </div>
                   <div className="info-item">
                     <span>Staked Amount</span>
-                    <span className="value">{stakeDuration}</span>
+                    <span className="value">{stakedAmount} BSC</span>
                   </div>
                 </div>
 
