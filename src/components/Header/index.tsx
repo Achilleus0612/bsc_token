@@ -39,17 +39,6 @@ const HeaderOne = () => {
 
     //Mobile Nav Hide Show
     if ($(".mobile-menu").length) {
-      let mobileMenuContent = $(".menu-area .main-menu").html();
-      $(".mobile-menu .menu-box .menu-outer").append(mobileMenuContent);
-
-      //Dropdown Button
-      $(".mobile-menu li.menu-item-has-children .dropdown-btn").on(
-        "click",
-        function () {
-          $(this).toggleClass("open");
-          $(this).prev("ul").slideToggle(500);
-        }
-      );
       //Menu Toggle Btn
       $(".mobile-nav-toggler").on("click", function () {
         $("body").addClass("mobile-menu-visible");
@@ -79,6 +68,9 @@ const HeaderOne = () => {
               <div className={"mobile-nav-toggler"}>
                 <i className="fas fa-bars" />
               </div>
+
+              {/* Mobile Wallet Button - Always Visible on Mobile */}
+          
 
               <div className="menu-wrap">
                 <nav className={"menu-nav"}>
@@ -163,7 +155,62 @@ const HeaderOne = () => {
                   </div>
 
                   <div className={"menu-outer"}>
-                    {/* <!--Here Menu Will Come Automatically Via Javascript / Same Menu as in Header-->  */}
+                    {/* Mobile Navigation Menu */}
+                    <ul className={"navigation"}>
+                      <li className={cn(hash === "#header" && "active")}>
+                        <Link
+                          to="#header"
+                          className={"section-link"}
+                          onClick={() => {
+                            handleClickScroll("header");
+                            $("body").removeClass("mobile-menu-visible");
+                          }}
+                        >
+                          Home
+                        </Link>
+                      </li>
+                      <li className={cn(hash === "#about" && "active")}>
+                        <Link
+                          to="#about"
+                          className={"section-link"}
+                          onClick={() => {
+                            handleClickScroll("about");
+                            $("body").removeClass("mobile-menu-visible");
+                          }}
+                        >
+                          About us
+                        </Link>
+                      </li>
+                      <li className={isActiveLink("#tokenomics")}>
+                        <Link
+                          to="#tokenomics"
+                          className={"section-link"}
+                          onClick={() => {
+                            handleClickScroll("tokenomics");
+                            $("body").removeClass("mobile-menu-visible");
+                          }}
+                        >
+                          TOKENOMICS
+                        </Link>
+                      </li>
+                      <li className={isActiveLink("#roadmap")}>
+                        <Link
+                          to="#roadmap"
+                          className={"section-link"}
+                          onClick={() => {
+                            handleClickScroll("roadmap");
+                            $("body").removeClass("mobile-menu-visible");
+                          }}
+                        >
+                          Roadmap
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Mobile Wallet Connect Button */}
+                  <div className={"mobile-wallet-connect"}>
+                    <WalletMultiButton className="wallet-adapter-button mobile-wallet-btn" />
                   </div>
 
                   <div className={"social-links"}>

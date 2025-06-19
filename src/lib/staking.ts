@@ -4,7 +4,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { IDL } from "../idl/staking";
 import { TOKEN_PROGRAM_ID, getAssociatedTokenAddress, createAssociatedTokenAccountInstruction } from "@solana/spl-token";
 
-export const STAKING_PROGRAM_ID = new PublicKey("9Z8DPy12nRaxMhKAmrCcXKAWKGyUwpkZLwpBG592AcWv");
+export const STAKING_PROGRAM_ID = new PublicKey("4jZaAUhkWHJdRX4PB39v1z1Tkt1Uc7dG5uTGWadYwyBc");
 
 export const getStakingProgram = (connection: Connection, wallet: any) => {
   const provider = new AnchorProvider(connection, wallet, {
@@ -177,7 +177,7 @@ export const stakeTokens = async (
     const vaultTokenAccount = await createVaultTokenAccount(connection, walletAdapter, tokenMint);
     
     const tx = await program.methods
-      .stake(new BN(amount))
+      .stake(new BN(amount * 1000000))
       .accounts({
         user: wallet,
         staker: stakerPDA,
@@ -223,7 +223,7 @@ export const unstakeTokens = async (
     const vaultTokenAccount = await getVaultTokenAccount(tokenMint);
     
     const tx = await program.methods
-      .unstake(new BN(amount))
+      .unstake(new BN(amount * 1000000))
       .accounts({
         staker: stakerPDA,
         user: wallet,
@@ -304,7 +304,7 @@ export const getPendingRewards = async (
     const SECONDS_PER_YEAR = 31_536_000;
     
     if (elapsed <= 0) {
-      return 0; // No rewards if no time has passed
+      return stakerAccount.lastReward.div(new BN(1000000)).toNumber(); // No rewards if no time has passed
     }
     
     // Calculate pending rewards using the same logic as the Rust claim_rewards_internal function
@@ -312,7 +312,9 @@ export const getPendingRewards = async (
       .mul(new BN(APR_BASIS_POINTS))
       .mul(new BN(elapsed))
       .div(new BN(SECONDS_PER_YEAR))
-      .div(new BN(10_000)); // APR in basis points
+      .div(new BN(10_000)) // APR in basis points
+      .add(stakerAccount.lastReward)
+      .div(new BN(1000000))
     
     return rewards.toNumber();
   } catch (error) {
@@ -330,7 +332,7 @@ export const getStakedAmount = async (
   
   try {
     const stakerAccount = await program.account.staker.fetch(stakerPDA);
-    return stakerAccount.amountStaked.toNumber();
+    return stakerAccount.amountStaked.div(new BN(1000000)).toNumber();
   } catch (error) {
     console.error("Error getting staked amount:", error);
     // Return 0 if there's an error (e.g., account doesn't exist)

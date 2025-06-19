@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { getStakingProgram, stakeTokens, unstakeTokens, claimRewards, getPendingRewards, getStakedAmount } from "../../lib/staking";
+import { isMobileDevice } from "../../lib/helpers";
 
 declare global {
   interface Window {
@@ -17,9 +18,15 @@ const Stake: React.FC = () => {
   const [stakedAmount, setStakedAmount] = useState(0);
   const [pendingRewards, setPendingRewards] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const { publicKey, connected } = useWallet();
 
   const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+
+  useEffect(() => {
+    // Check if user is on mobile
+    setIsMobile(isMobileDevice());
+  }, []);
 
   useEffect(() => {
     if (connected && publicKey) {
@@ -229,6 +236,16 @@ const Stake: React.FC = () => {
             </div>
           </div>
         </div>
+        {!connected && (
+          <div style={{ 
+            textAlign: "center", 
+            marginTop: "20px", 
+            color: "#ff6b6b", 
+            fontSize: isMobile ? "14px" : "16px" 
+          }}>
+            Please connect your wallet to access staking features
+          </div>
+        )}
       </div>
     </section>
   );

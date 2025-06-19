@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { mintTokens, getMintProgram } from "../../lib/mint";
+import { isMobileDevice } from "../../lib/helpers";
 
 declare global {
   interface Window {
@@ -15,8 +16,14 @@ const VAULT_TOKEN_ACCOUNT = new PublicKey("B848Q6vgD7poDSsbj7VcEvQPiuWRccuAhwcEK
 
 const BuyToken: React.FC = () => {
   const [amount, setAmount] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const { publicKey, connected } = useWallet();
   const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+
+  useEffect(() => {
+    // Check if user is on mobile
+    setIsMobile(isMobileDevice());
+  }, []);
 
   const handleBuyToken = async () => {
     if (!connected || !publicKey) {
@@ -56,6 +63,7 @@ const BuyToken: React.FC = () => {
                   alignItems: "center",
                   gap: "10px",
                   marginBottom: "20px",
+                  flexDirection: isMobile ? "column" : "row",
                 }}
               >
                 <input
@@ -69,15 +77,34 @@ const BuyToken: React.FC = () => {
                   }
                 />
               </div>
-              <div style={{ display: "flex", justifyContent: "center", gap: "10px" , marginBottom: "20px",}}>
+              <div style={{ 
+                display: "flex", 
+                justifyContent: "center", 
+                gap: "10px", 
+                marginBottom: "20px",
+                flexDirection: isMobile ? "column" : "row",
+              }}>
                 <button 
                   className="btn" 
                   onClick={handleBuyToken}
                   disabled={!connected}
+                  style={{
+                    width: isMobile ? "100%" : "auto",
+                    maxWidth: isMobile ? "300px" : "none",
+                  }}
                 >
                   Mint Token
                 </button>
               </div>
+              {!connected && (
+                <div style={{ 
+                  marginTop: "10px", 
+                  color: "#ff6b6b", 
+                  fontSize: isMobile ? "14px" : "16px" 
+                }}>
+                  Please connect your wallet to mint tokens
+                </div>
+              )}
             </div>
           </div>
         </div>

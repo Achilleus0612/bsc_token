@@ -3555,6 +3555,18 @@ label {
   padding: 14px 20px;
   font-size: 24px;
   box-shadow: 0px 6px 22px rgba(6, 34, 51, 0.22);
+  
+  @media (max-width: 768px) {
+    font-size: 18px;
+    padding: 12px 16px;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 16px;
+    padding: 10px 14px;
+  }
 }
 
 /* Stake Component Styles */
@@ -3563,6 +3575,15 @@ label {
   border-radius: 15px;
   padding: 30px;
   margin-top: 20px;
+  
+  @media (max-width: 768px) {
+    padding: 20px;
+    margin-top: 15px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 15px;
+  }
 }
 
 .stake-input-group {
@@ -3570,6 +3591,12 @@ label {
   gap: 15px;
   margin-bottom: 30px;
   justify-content: center;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
 
   .Buy-token-input {
     width: 60%;
@@ -3583,6 +3610,11 @@ label {
     &:focus {
       outline: none;
       border-color: #00c4f4;
+    }
+    
+    @media (max-width: 768px) {
+      width: 100%;
+      max-width: 300px;
     }
   }
 
@@ -3605,6 +3637,11 @@ label {
       background: #0b1d33;
       color: #fff;
     }
+    
+    @media (max-width: 768px) {
+      width: 100%;
+      max-width: 300px;
+    }
   }
 }
 
@@ -3615,6 +3652,12 @@ label {
   padding: 20px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
 
   .info-item {
     text-align: center;
@@ -3639,6 +3682,11 @@ label {
   gap: 15px;
   justify-content: center;
   align-items: center;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 10px;
+  }
 
   .stake-btn {
     background: #00c4f4;
@@ -3657,6 +3705,12 @@ label {
     &:disabled {
       background: #666;
       cursor: not-allowed;
+    }
+    
+    @media (max-width: 768px) {
+      width: 100%;
+      max-width: 300px;
+      padding: 14px 20px;
     }
   }
 
@@ -3678,6 +3732,12 @@ label {
       border-color: #666;
       color: #666;
       cursor: not-allowed;
+    }
+    
+    @media (max-width: 768px) {
+      width: 100%;
+      max-width: 300px;
+      padding: 14px 20px;
     }
   }
 }
@@ -3717,6 +3777,254 @@ label {
 
     .wallet-adapter-button-start-icon {
       margin-right: 8px !important;
+    }
+  }
+}
+
+/* Mobile Wallet Connect Button Styles */
+.mobile-wallet-connect {
+  padding: 20px;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 20px;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+
+  .mobile-wallet-btn {
+    width: 100% !important;
+    max-width: 280px !important;
+    padding: 15px 20px !important;
+    font-size: 16px !important;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, #00c4f4 0%, #0099cc 100%) !important;
+    box-shadow: 0 4px 15px rgba(0, 196, 244, 0.3) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: white !important;
+    text-decoration: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    min-height: 48px !important;
+    font-weight: 600 !important;
+    
+    &:hover {
+      background: linear-gradient(135deg, #0099cc 0%, #007799 100%) !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 20px rgba(0, 196, 244, 0.4) !important;
+    }
+
+    &:active {
+      transform: translateY(0) !important;
+    }
+  }
+}
+
+/* Mobile Responsive Wallet Modal */
+.wallet-adapter-modal {
+  z-index: 9999 !important;
+  
+  .wallet-adapter-modal-wrapper {
+    max-width: 400px !important;
+    max-height: 80vh !important;
+    margin: 10vh auto !important;
+    padding: 20px !important;
+    border-radius: 16px !important;
+    
+    @media (max-width: 768px) {
+      max-width: 95vw !important;
+      margin: 2.5vh auto !important;
+    }
+  }
+  
+  .wallet-adapter-modal-button-close {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 50% !important;
+    top: 16px !important;
+    right: 16px !important;
+    padding: 6px !important;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.2) !important;
+    }
+  }
+  
+  .wallet-adapter-modal-title {
+    font-size: 20px !important;
+    margin-bottom: 16px !important;
+    padding: 0 20px !important;
+    
+    @media (max-width: 768px) {
+      font-size: 18px !important;
+    }
+  }
+  
+  .wallet-adapter-modal-list {
+    max-height: 50vh !important;
+    padding: 0 12px !important;
+    margin: 0 -12px !important;
+    
+    @media (max-width: 768px) {
+      max-height: 60vh !important;
+    }
+  }
+  
+  .wallet-adapter-modal-list-item {
+    border-radius: 8px !important;
+    margin-bottom: 6px !important;
+    transition: all 0.2s ease !important;
+    padding: 0 8px !important;
+    
+    &:hover {
+      background: rgba(0, 196, 244, 0.1) !important;
+      transform: translateX(4px) !important;
+    }
+    
+    .wallet-adapter-modal-list-item-button {
+      padding: 12px 16px !important;
+      border-radius: 8px !important;
+      font-size: 15px !important;
+      font-weight: 500 !important;
+      height: auto !important;
+      
+      img {
+        width: 24px !important;
+        height: 24px !important;
+      }
+      
+      @media (max-width: 768px) {
+        padding: 14px 16px !important;
+        font-size: 14px !important;
+      }
+    }
+  }
+}
+
+/* Additional Mobile Responsive Improvements */
+@media (max-width: 768px) {
+  /* Ensure wallet modal is properly positioned on mobile */
+  .wallet-adapter-modal {
+    .wallet-adapter-modal-wrapper {
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      width: 90vw !important;
+      max-width: 400px !important;
+      max-height: 80vh !important;
+      overflow-y: auto !important;
+    }
+  }
+  
+  /* Improve button touch targets on mobile */
+  .btn, .wallet-adapter-button {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    touch-action: manipulation !important;
+  }
+  
+  /* Ensure proper spacing for mobile inputs */
+  .Buy-token-input {
+    -webkit-appearance: none !important;
+    border-radius: 8px !important;
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+  
+  /* Improve mobile menu wallet button */
+  .mobile-wallet-connect {
+    .mobile-wallet-btn {
+      min-height: 48px !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+    }
+  }
+  
+  /* Ensure proper modal backdrop on mobile */
+  .wallet-adapter-modal-overlay {
+    background: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(4px) !important;
+  }
+}
+
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .Buy-token-input {
+    font-size: 16px !important;
+  }
+  
+  .wallet-adapter-button {
+    -webkit-tap-highlight-color: transparent !important;
+  }
+}
+
+/* Android Chrome specific fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .wallet-adapter-button {
+    -webkit-tap-highlight-color: transparent !important;
+  }
+}
+
+/* Ensure mobile menu wallet button is always visible */
+.mobile-menu {
+  .menu-box {
+    .mobile-wallet-connect {
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+      position: relative !important;
+      z-index: 10 !important;
+    }
+  }
+}
+
+/* Mobile Wallet Button - Always Visible */
+.mobile-wallet-button {
+  position: absolute;
+  right: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  
+  .mobile-wallet-btn-small {
+    padding: 8px 16px !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+    background: linear-gradient(135deg, #00c4f4 0%, #0099cc 100%) !important;
+    box-shadow: 0 2px 8px rgba(0, 196, 244, 0.3) !important;
+    min-height: 36px !important;
+    min-width: 80px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: white !important;
+    text-decoration: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    font-weight: 600 !important;
+    
+    &:hover {
+      background: linear-gradient(135deg, #0099cc 0%, #007799 100%) !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 12px rgba(0, 196, 244, 0.4) !important;
+    }
+
+    &:active {
+      transform: translateY(0) !important;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-wallet-button {
+    right: 50px;
+    
+    .mobile-wallet-btn-small {
+      padding: 6px 12px !important;
+      font-size: 12px !important;
+      min-width: 70px !important;
     }
   }
 }
